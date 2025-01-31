@@ -194,8 +194,8 @@ RegisterCommand('+radiotalk', function()
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
-			if shouldPlayAnimation then
-				RequestAnimDict('random@arrests')
+			iif shouldPlayAnimation then
+				RequestAnimDict('anim@male@holding_radio')
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
@@ -206,11 +206,13 @@ RegisterCommand('+radiotalk', function()
 						checkFailed = true
 						break
 					end
-					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
-						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
-							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+					if shouldPlayAnimation and HasAnimDictLoaded("anim@male@holding_radio") then
+						if not IsEntityPlayingAnim(PlayerPedId(), "anim@male@holding_radio", "holding_radio_clip", 3) then
+							TaskPlayAnim(PlayerPedId(), "anim@male@holding_radio", "holding_radio_clip", 8.0, 2.0, -1, 50, 2.0, false,
 								false,
 							false)
+							radioProp = CreateObject(`prop_cs_hand_radio`, 1.0, 1.0, 1.0, 1, 1, 0)
+							AttachEntityToEntity(radioProp, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 28422), 0.0750, 0.0230, -0.0230, -90.0000, 0.0, -59.9999, 1, 0, 0, 0, 2, 1)
 						end
 					end
 					SetControlNormal(0, 249, 1.0)
@@ -225,7 +227,7 @@ RegisterCommand('+radiotalk', function()
 					ExecuteCommand("-radiotalk")
 				end
 				if shouldPlayAnimation then
-					RemoveAnimDict('random@arrests')
+					RemoveAnimDict('anim@male@holding_radio')
 				end
 			end)
 		else
@@ -243,7 +245,8 @@ RegisterCommand('-radiotalk', function()
 		LocalPlayer.state:set("radioActive", false, true);
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
-			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
+			StopAnimTask(PlayerPedId(), "anim@male@holding_radio", "holding_radio_clip", -4.0)
+			DeleteObject(radioProp)
 		end
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
 	end
